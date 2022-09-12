@@ -57,6 +57,7 @@ func download(remoteMetaData *FileMetaData, client RPCClient, blockStoreAddr str
 }
 
 func ClientSync(client RPCClient) {
+	log.Println("Syncing starts!")
 	var blockStoreAddr string
 	var Version int32
 	if err := client.GetBlockStoreAddr(&blockStoreAddr); err != nil {
@@ -80,11 +81,13 @@ func ClientSync(client RPCClient) {
 		localMetaData, prs := localFileMetaMap[file.Name()]
 		newHashes := upload(file, client, blockStoreAddr)
 		if !prs || len(newHashes) != len(localMetaData.BlockHashList) {
+			log.Println("Local creation detected:", file.Name())
 			changed = true
 		} else {
 			for i, hash := range newHashes {
 				if localMetaData.BlockHashList[i] != hash {
 					changed = true
+					log.Println("Local modification detected:", file.Name())
 					break
 				}
 			}
@@ -107,6 +110,7 @@ func ClientSync(client RPCClient) {
 	}
 	for filename, localMetaData := range localFileMetaMap {
 		if _, prs := localFiles[filename]; !prs && (len(localMetaData.BlockHashList) != 1 || localMetaData.BlockHashList[0] != "0") {
+			log.Println("Local deletion detected:", filename)
 			newMetaData := FileMetaData{Filename: filename, BlockHashList: []string{"0"}}
 			newMetaData.Version = localMetaData.Version + 1
 			if err = client.UpdateFile(&newMetaData, &Version); err != nil {
@@ -117,15 +121,19 @@ func ClientSync(client RPCClient) {
 			}
 		}
 	}
+	log.Println("All local changes synced")
 	remoteFileMetaMap := make(map[string]*FileMetaData)
 	if err := client.GetFileInfoMap(&remoteFileMetaMap); err != nil {
 		log.Panicln(err)
 	}
 	for filename, remoteMetaData := range remoteFileMetaMap {
 		if localMetaData, prs := localFileMetaMap[filename]; !prs || localMetaData.Version < remoteMetaData.Version {
+			log.Println("Newer cloud version detected:", filename)
 			localFileMetaMap[filename] = remoteMetaData
 			download(remoteMetaData, client, blockStoreAddr)
 		}
 	}
+	log.Println("All cloud changes synced")
 	WriteMetaFile(localFileMetaMap, client.BaseDir)
+	log.Println("Great, job done!")
 }

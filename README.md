@@ -1,15 +1,17 @@
 # Retain
 
+Retain is a cloud file storage service that lets you sync files across multiple nodes, supporting creation, modification, deletion and fetching specific versions of a file (in progress). Retain is an ongoing extension of the CSE 224 project *Surfstore*.
+
 ## Usage
-1. Run your server using this:
+1. Download and unzip the release. On Linux, run your server using this:
 ```shell
-bin/retainServe -s <service> -p <port> -l -d (BlockStoreAddr*)
+bin/retainServe -s <serviceType> -p <port> -l -d (blockStoreAddr*)
 ```
-Here, `service` should be one of three values: meta, block, or both. This is used to specify the service provided by the server. `port` defines the port number that the server listens to (default=8080). `-l` configures the server to only listen on localhost. `-d` configures the server to output log statements. Lastly, (BlockStoreAddr\*) is the BlockStore address that the server is configured with. If `service=both` then the BlockStoreAddr should be the `ip:port` of this server.
+Here, `service` should be one of three values: meta, block, or both. This is used to specify the service provided by the server. `port` defines the port number that the server listens to (default=8080). `-l` configures the server to only listen on localhost. `-d` configures the server to output log statements. Lastly, (blockStoreAddr\*) is the BlockStore address that the server is configured with. If `service=both` then the blockStoreAddr should be the `ip:port` of this server.
 
 2. Run your client using this:
 ```shell
-bin/retainSync -d <meta_addr:port> <base_dir> <block_size>
+bin/retainSync -d <host:port> <baseDir> <blockSize>
 ```
 
 ### Examples

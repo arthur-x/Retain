@@ -14,7 +14,7 @@ import (
 const ARG_COUNT int = 3
 
 // Usage strings
-const USAGE_STRING = "./retainSync -d host:port baseDir blockSize"
+const USAGE_STRING = "./retainSync -d <host:port> <baseDir> <blockSize>"
 
 const DEBUG_NAME = "d"
 const DEBUG_USAGE = "Output log statements"

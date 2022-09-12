@@ -15,7 +15,7 @@ import (
 )
 
 // Usage String
-const USAGE_STRING = "./retainServe -s <service_type> -p <port> -l -d (blockStoreAddr*)"
+const USAGE_STRING = "./retainServe -s <serviceType> -p <port> -l -d (blockStoreAddr*)"
 
 // Set of valid services
 var SERVICE_TYPES = map[string]bool{"meta": true, "block": true, "both": true}
@@ -31,11 +31,11 @@ func main() {
 		flag.VisitAll(func(f *flag.Flag) {
 			fmt.Fprintf(w, "  -%s: %v\n", f.Name, f.Usage)
 		})
-		fmt.Fprintf(w, "  (blockStoreAddr*): BlockStore Address (include self if service type is both)\n")
+		fmt.Fprintf(w, "  (blockStoreAddr*): BlockStore address (include self if service type is both)\n")
 	}
 
 	// Parse command-line argument flags
-	service := flag.String("s", "", "(required) Service Type of the Server: meta, block, both")
+	service := flag.String("s", "", "(required) Service type of the Server: meta, block, both")
 	port := flag.Int("p", 8080, "(default = 8080) Port to accept connections")
 	localOnly := flag.Bool("l", false, "Only listen on localhost")
 	debug := flag.Bool("d", false, "Output log statements")
@@ -89,6 +89,7 @@ func startServer(hostAddr string, serviceType string, blockStoreAddr string) err
 	if err != nil {
 		return fmt.Errorf("failed to listen: %v", err)
 	}
+	log.Println("Listening on", hostAddr)
 	if err := grpcServer.Serve(lis); err != nil {
 		return fmt.Errorf("failed to serve: %v", err)
 	}
